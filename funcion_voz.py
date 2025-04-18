@@ -1,29 +1,31 @@
 import speech_recognition as sr
+
 recognizer = sr.Recognizer()
-mic= sr.Microphone()
+mic = sr.Microphone()
 
 def escuchar():
-    with mic as source:
-        print ("Esperando tu voz... (habla claro)")
-        recognizer.adjust_for_ambient_noise(source) 
-        audio = recognizer.listen(source)
+    for intento in range(3):
+        with mic as source:
+            print("Di algo... (habla claro)")
+            recognizer.adjust_for_ambient_noise(source)
+            audio = recognizer.listen(source)  # Escucha hasta que haya silencio
 
-    try:
-        comando = recognizer.recognize_google(audio, language="es-CO")        
-        print(f"Escuchando..")
-        for _ in range (3):
-             comando = escuchar_comando()
-        if comando:
-             break
-        print("Intenta de nuevo...")
-        return (f"{comando.lower()}")
+        try:
+            texto = recognizer.recognize_google(audio, language="es-CO")
+            print(f"Entendí: {texto}")
+            return texto.lower()  # Devuelve el texto en minúsculas
+        except sr.UnknownValueError:
+            print("No entendí, repite por favor.")
+            return ""
+        except sr.RequestError:
+            print("Error de conexión con Google.")
+            return ""
+    return ""
+    
 
-    except sr.UnknownValueError:
-        print("No entendí lo que dijiste...")
-        return ""
-    except sr.RequestError:
-        print ("Servidor inestable")
-        return ""
-
-
-
+# Ejemplo de uso:
+comando = escuchar()
+if comando:
+    print("Comando recibido:", comando)
+else:
+    print("No se detectó voz válida.")
