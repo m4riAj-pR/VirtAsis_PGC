@@ -1,8 +1,7 @@
 from core_asistente import AsistenteVirtual
 from funcion_voz import *
 from datetime import datetime
-from Usuario import SistemaAutenticacion
-from interfaz import *
+
 
 asistente = AsistenteVirtual()
 
@@ -10,8 +9,9 @@ class Menu:
     def __init__(self, usuario):
         self.usuario = usuario
 
+
     def mostrar_opciones(self):
-        hablar(f"Hola {self.usuario.obtener_primer_nombre()}, soy Zeta, tu asistente virtual.")
+        hablar(f"Hola {self.usuario}, soy Zeta, tu asistente virtual.")
         hablar("Estas son las opciones disponibles:")
         hablar("""
 1. Crear clase
@@ -57,13 +57,13 @@ class Menu:
 
     def crear_clase(self):
         hablar("¿Cuál es el nombre de la clase?")
-        nombre_clase = escuchar()
+        nombre_clase = escuchar_con_intentos()
         hablar("¿Cual es el curso?")
-        notas = escuchar()
+        curso = input()
         hablar("¿Cuál es la fecha y hora de la clase? (Formato: YYYY-MM-DD HH:MM)")
         fecha_input = input()
         fecha = datetime.strptime(fecha_input, "%Y-%m-%d %H:%M")
-        clase = asistente.crear_clase(nombre_clase, notas, fecha)
+        clase = asistente.crear_clase(nombre_clase, curso, fecha)
         hablar(f"Clase '{clase.nombre}' creada con éxito.")
 
     def crear_leccion(self):
@@ -73,9 +73,9 @@ class Menu:
         if clases:
             clase = clases[0]
             hablar("¿Cuál es el nombre de la tematica?")
-            nombre_leccion = escuchar()
+            nombre_leccion = escuchar_con_intentos()
             hablar("¿Cuáles son las notas de la tematica?")
-            notas = escuchar()
+            notas = escuchar_con_intentos()
             hablar("¿Cuál es la fecha de la tematica? (Formato: YYYY-MM-DD HH:MM)")
             fecha_input = input()
             fecha = datetime.strptime(fecha_input, "%Y-%m-%d %H:%M")
@@ -86,16 +86,16 @@ class Menu:
 
     def agregar_tarea(self):
         hablar("¿A qué tematica deseas agregar una tarea?")
-        nombre_leccion = escuchar()
+        nombre_leccion = escuchar_con_intentos()
         lecciones = asistente.buscar_lecciones(nombre_leccion)
         if lecciones:
             hablar("¿Descripción de la tarea?")
-            descripcion = escuchar()
+            descripcion = escuchar_con_intentos()
             hablar("¿Fecha de entrega de la tarea? (Formato: YYYY-MM-DD HH:MM)")
             fecha_input = input()
             fecha = datetime.strptime(fecha_input, "%Y-%m-%d %H:%M")
-            hablar("¿Prioridad de la tarea?")
-            prioridad = escuchar()
+            hablar("¿Prioridad de la tarea?, (Alta, Media, Baja)")
+            prioridad = escuchar_con_intentos()
             tarea = lecciones[0].agregar_tarea(descripcion, fecha, prioridad)
             hablar(f"Tarea '{tarea.descripcion}' agregada con éxito.")
         else:
@@ -106,7 +106,7 @@ class Menu:
         nombre_tarea = escuchar()
         tarea = asistente.buscar_tareas(nombre_tarea)
         if tarea:
-            recordatorio = tarea[0].crear_recordatorio()  # Recordatorio automático
+            recordatorio = tarea[0].crear_recordatorio()  
             hablar(f"Recordatorio agregado: {recordatorio}")
         else:
             hablar("Tarea no encontrada. Primero agrega una tarea.")
@@ -163,38 +163,9 @@ class Menu:
         hablar("Mostrando todas las clases y lecciones:")
         asistente.mostrar_clases_y_lecciones()
 
-def main():
-    sistema = SistemaAutenticacion()
+    def mostrar_menu(self):
+        self.mostrar_opciones()
+        self.ejecutar()
 
-    while True:
-        print("\nBienvenido a TeachAssistant")
-        print("1. Iniciar sesión")
-        print("2. Registrarse")
-        print("3. Salir")
 
-        opcion = input("Selecciona una opción (1, 2 o 3): ").strip()
-
-        if opcion == "1":
-            usuario = sistema.iniciar_sesion()
-            if usuario:
-                menu = Menu(usuario)
-                menu.mostrar_opciones()
-                menu.ejecutar()
-        elif opcion == "2":
-            usuario = sistema.registrar_usuario()
-            if usuario:
-                menu = Menu(usuario)
-                menu.mostrar_opciones()
-                menu.ejecutar()
-        elif opcion == "3":
-            print("Saliendo del sistema. ¡Hasta luego!")
-            break
-        else:
-            print("Opción inválida. Por favor, selecciona una opción válida.")
-
-if __name__ == "__main__":
-    main()
-    root = tk.Tk()
-    app = LoginVentana(root)
-    root.mainloop()
-    
+     # ← lanza el menú por voz

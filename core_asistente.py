@@ -1,7 +1,5 @@
-# Clase base para elementos comunes (temáticas y recordatorios)
 from datetime import datetime, timedelta
 
-# Clase base para elementos comunes (clases, lecciones)
 class ItemBase:
     def __init__(self, nombre="", notas=""):
         self.nombre = nombre
@@ -31,7 +29,7 @@ class Clase(ItemBase):
         self.lecciones = [l for l in self.lecciones if l != leccion]
 
     def __str__(self):
-        return f"Clase: {self.nombre} | Fecha: {self.fecha.strftime('%d/%m/%Y %H:%M')} | Curso: {self.curso}| Notas: {self.notas}"
+        return f"Clase: {self.nombre} | Fecha: {self.fecha.strftime('%d/%m/%Y %H:%M')} | Curso: {self.curso}| "
 
 class Leccion(ItemBase):
     def __init__(self, nombre, notas, fecha=None):
@@ -47,7 +45,6 @@ class Leccion(ItemBase):
     def __str__(self):
         return f"Lección: {self.nombre} | Fecha: {self.fecha.strftime('%d/%m/%Y %H:%M')} | Notas: {self.notas}"
 
-# Clase para Tareas
 class Tarea:
     def __init__(self, descripcion, fecha_entrega, prioridad="Normal"):
         self.descripcion = descripcion
@@ -62,7 +59,6 @@ class Tarea:
     def __str__(self):
         return f"Tarea: {self.descripcion} | Fecha de entrega: {self.fecha_entrega.strftime('%d/%m/%Y')}"
 
-# Clase para Recordatorios
 class Recordatorio:
     def __init__(self, mensaje, fecha_hora=None, prioridad="Normal"):
         self.mensaje = mensaje
@@ -71,13 +67,13 @@ class Recordatorio:
 
     def __str__(self):
         return f"Recordatorio: {self.mensaje} | Fecha: {self.fecha.strftime('%d/%m/%Y %H:%M')}"
-# Clase Asistente Virtual: Interacción principal del docente con el sistema
+
 class AsistenteVirtual:
     def __init__(self):
         self.clases = []
 
-    def crear_clase(self, nombre, notas, fecha=None):
-        nueva_clase = Clase(nombre, notas, fecha)
+    def crear_clase(self, nombre, curso, fecha=None):
+        nueva_clase = Clase(nombre, curso, fecha)
         self.clases.append(nueva_clase)
         return nueva_clase
 
@@ -90,7 +86,6 @@ class AsistenteVirtual:
         return tarea
 
     def generar_recordatorios(self):
-        """Genera recordatorios automáticos para todas las tareas en todas las clases."""
         recordatorios = []
         for clase in self.clases:
             for leccion in clase.lecciones:
@@ -112,5 +107,13 @@ class AsistenteVirtual:
         recordatorios = self.generar_recordatorios()
         for recordatorio in recordatorios:
             print(recordatorio)
+
+    def buscar_clases(self, nombre_clase):
+        coincidencias = []
+        for clase in self.clases:
+            if nombre_clase.lower() in clase.nombre.lower():
+                coincidencias.append(clase)
+        return coincidencias
+            
 
 
