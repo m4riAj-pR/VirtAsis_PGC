@@ -6,32 +6,40 @@ mic= sr.Microphone()
 engine = pyttsx3.init()
 engine.setProperty('rate', 150)
 
-def escuchar():
-    with mic as source:
-        print ("Esperando tu voz... (habla claro)")
-        recognizer.adjust_for_ambient_noise(source) 
-        audio = recognizer.listen(source)
-    try:
-        comando = recognizer.recognize_google(audio, language="es-CO")        
-        print(f"Escuchando..")
-        return (f"{comando.lower()}")
 
-    except sr.UnknownValueError:
-        print("No entendí lo que dijiste...")
-        return ""
-    except sr.RequestError:
-        print ("Servidor inestable")
-        return ""
+def escuchar():
+    while True:
+        print("Esperando tu voz... (habla claro)")
+        with mic as source:
+            recognizer.adjust_for_ambient_noise(source)
+            try:
+                audio = recognizer.listen(source, timeout=5)
+                print("Procesando voz...")
+                comando = recognizer.recognize_google(audio, language="es-MX")
+                print(f"Escuchado (Google): {comando.lower()}")
+                return comando.lower()
+            except sr.WaitTimeoutError:
+                print("No se detectó voz en el tiempo especificado. Intenta de nuevo.")
+                continue  
+            except sr.UnknownValueError:
+                print("Google Speech Recognition no entendió lo que dijiste. Intenta de nuevo.")
+                continue  
+            except sr.RequestError as e:
+                print(f"Error con el servicio de Google Speech Recognition: {e}. Intenta de nuevo.")
+                continue  
+    
 
 def escuchar_con_intentos(max_intentos=3):
-    for intento in range(max_intentos):
-        texto = escuchar()
-        if texto and texto.strip():
+    for i in range(max_intentos):
+        texto = escuchar() or ""
+        
+        if texto.strip():  
             return texto
-            
+        
         hablar("No te he entendido. Por favor, intenta de nuevo.")
+    
     hablar("Por favor escribe tu respuesta:")
-    return input().strip()
+    return input().strip()  
 
 def hablar(texto):
     print("Asistente:", texto)
