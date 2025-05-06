@@ -1,5 +1,10 @@
+from datetime import datetime
+from asistente_virtual import AsistenteVirtual
+from core.funciones.clases_docente import ClasesDocente
+from core.funciones.recordatorios import Recordatorio
+from core.funciones.lecciones import Leccion
+from core.funciones.tareas import Tarea
 import json
-from core_asistente import *
 
 NOMBRE_ARCHIVO = "asistente_data.json"
 
@@ -47,11 +52,11 @@ class AsistenteConPersistencia(AsistenteVirtual):
         data["lecciones"] = [self._leccion_a_dict(leccion) for leccion in clase.lecciones]
         data["recordatorios_clase"] = [self._recordatorio_a_dict(rec) for rec in clase.recordatorios_clase]
         return data
-
+    
     def _clase_desde_dict(self, data):
-        clase = Clases(nombre=data.get("nombre", ""), curso=data.get("curso", ""), fecha=datetime.fromisoformat(data.get("fecha")) if data.get("fecha") else None)
-        Clases.lecciones = [self._leccion_desde_dict(leccion_data) for leccion_data in data.get("lecciones", [])]
-        Clases.recordatorios_clase = [self._recordatorio_desde_dict(rec_data) for rec_data in data.get("recordatorios_clase", [])]
+        clase = ClasesDocente(nombre=data.get("nombre", ""), curso=data.get("curso", ""), fecha=datetime.fromisoformat(data.get("fecha")) if data.get("fecha") else None)
+        clase.lecciones = [self._leccion_desde_dict(leccion_data) for leccion_data in data.get("lecciones", [])]
+        clase.recordatorios_clase = [self._recordatorio_desde_dict(rec_data) for rec_data in data.get("recordatorios_clase", [])]
         return clase
 
     def _leccion_a_dict(self, leccion):
