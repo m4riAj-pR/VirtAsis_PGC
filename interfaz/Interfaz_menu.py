@@ -1,5 +1,5 @@
 from interfaz.funciones_menu import Menu
-from tkinter import Tk as tk
+import tkinter as tk
 
 COLOR_FONDO = "#F5F8FA"
 COLOR_TITULO = "#1E3A76"
@@ -7,17 +7,18 @@ COLOR_BOTON = "#3F5C92"
 COLOR_BOTON_HOVER = "#2f4a78"
 COLOR_BOTON_TEXTO = "#FFFFFF"
 COLOR_SOMBRA = "#C3CFD9"
-import tkinter as tk
 
 class InterfazMenu(Menu):
     def __init__(self, usuario, master=None):
+        super().__init__(usuario)  # ✅ Inicializa correctamente la clase base Menu
         self.usuario = usuario
+
         if master is None:
             self.ventana = tk.Tk()
         else:
             self.ventana = master
-        self.ventana.title(f"Menú Principal - TechAsistant ({self.usuario.obtener_primer_nombre()})")
-        self.ventana.title("Asistente ZETA")
+
+        self.ventana.title(f"Asistente ZETA - {self.usuario.obtener_primer_nombre()}")
         self.ventana.geometry("500x500")
         self.ventana.configure(bg=COLOR_FONDO)
 
@@ -36,7 +37,7 @@ class InterfazMenu(Menu):
         boton = tk.Button(
             marco_boton,
             text="Iniciar Asistente",
-            command=self.iniciar_asistente, 
+            command=self.iniciar_asistente,
             bg=COLOR_BOTON,
             fg=COLOR_BOTON_TEXTO,
             font=("Poppins", 14, "bold"),
@@ -46,6 +47,7 @@ class InterfazMenu(Menu):
             pady=10,
             cursor="hand2"
         )
+
         boton.pack()
 
         boton.bind("<Enter>", lambda e: boton.config(bg=COLOR_BOTON_HOVER))
@@ -54,6 +56,6 @@ class InterfazMenu(Menu):
     def iniciar_asistente(self):
         self.ventana.destroy()
         super().ejecutar()  
-
+        
     def mostrar_interfaz(self):
         self.ventana.mainloop()

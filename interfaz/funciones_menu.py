@@ -1,14 +1,14 @@
 from datetime import datetime
-from core.asistente_virtual import AsistenteVirtual
+from core.persistencia.almacenamiento import AsistenteConPersistencia
 from core.voz.voz_asistente import AsistenteDeVoz
 
-asistente_organizador = AsistenteVirtual()
+asistente_organizador = AsistenteConPersistencia()
 asistente_voz = AsistenteDeVoz()
 
 class Menu:
     def __init__(self, usuario):
         self.usuario = usuario
-        self.menu_desbloqueado = len(asistente_organizador.clases) > 0 # Desbloquear si ya hay clases guardadas
+        self.menu_desbloqueado = len(asistente_organizador.clases) > 0 
 
     def mostrar_opciones_iniciales(self):
         asistente_voz.hablar(f"Hola {self.usuario}, soy Zeta, tu asistente virtual.")
@@ -37,28 +37,40 @@ class Menu:
 
     def obtener_input_con_reintento(self, pregunta, es_fecha=False):
         while True:
-            asistente_voz.hablar(pregunta)
-            respuesta = asistente_voz.escuchar_con_intentos()
-            if respuesta:
-                if es_fecha:
-                    try:
-                        return datetime.strptime(input("Ingresa la fecha y hora (YYYY-MM-DD HH:MM): "), "%Y-%m-%d %H:%M")
-                    except ValueError:
-                        asistente_voz.hablar("Formato de fecha incorrecto. Intenta de nuevo.")
-                        continue
-                return respuesta
+            if es_fecha:
+                print(pregunta)
+                entrada = input("Ingresa la fecha y hora (YYYY-MM-DD HH:MM): ")
+                try:
+                    return datetime.strptime(entrada, "%Y-%m-%d %H:%M")
+                except ValueError:
+                    asistente_voz.hablar("Formato de fecha incorrecto. Intenta de nuevo.")
+                    continue
             else:
-                asistente_voz.hablar("No te escuché bien. Intenta de nuevo.")
+                asistente_voz.hablar(pregunta)
+                respuesta = asistente_voz.escuchar_con_intentos()
+                if respuesta:
+                    return respuesta
+                else:
+                    asistente_voz.hablar("No te escuché bien. Intenta de nuevo.")
 
     def crear_clase(self):
-        nombre_clase = self.obtener_input_con_reintento("¿Cuál es el nombre de la clase?")
-        curso = self.obtener_input_con_reintento("¿Cuál es el curso?")
-        fecha = self.obtener_input_con_reintento("¿Cuál es la fecha y hora de la clase? (Formato:YYYY-MM-DD HH:MM)", es_fecha=True)
-        if fecha:
-            clase = asistente_organizador.crear_clase(nombre_clase, curso, fecha)
-            asistente_voz.hablar(f"Clase '{clase.nombre}' creada con éxito.")
-           
+        while True:
+            nombre_clase = self.obtener_input_con_reintento("¿Cuál es el nombre de la clase?")
+            curso = self.obtener_input_con_reintento("¿Cuál es el curso?")
+            fecha = self.obtener_input_con_reintento(
+                "¿Cuál es la fecha y hora de la clase? (Formato:YYYY-MM-DD HH:MM)", es_fecha=True
+            )
+            if fecha:
+                clase = asistente_organizador.crear_clase(nombre_clase, curso, fecha)
+                asistente_voz.hablar(f"Clase '{clase.nombre}' creada con éxito.")
+                self.desbloquear_menu()
+                self.mostrar_opciones_completas ()
+                break
+            else:
+                asistente_voz.hablar("La fecha no es válida. Intenta nuevamente.")
 
+
+           
     def crear_leccion(self):
         while True:
             nombre_clase = self.obtener_input_con_reintento("¿A qué clase deseas agregar una lección?")
@@ -89,7 +101,6 @@ class Menu:
             if lecciones_encontradas:
                 if len(lecciones_encontradas) > 1:
                     asistente_voz.hablar("Se encontraron varias temáticas con ese nombre. Por favor, sé más específico.")
-                    # Aquí podrías implementar una forma de seleccionar la lección correcta
                 else:
                     leccion = lecciones_encontradas[0]
                     descripcion = self.obtener_input_con_reintento("¿Descripción de la tarea?")
@@ -107,16 +118,9 @@ class Menu:
     def agregar_recordatorio_general(self):
         while True:
             mensaje = self.obtener_input_con_reintento("¿Qué quieres recordar?")
-            fecha_str = self.obtener_input_con_reintento("¿Para cuándo quieres el recordatorio? (Formato:YYYY-MM-DD HH:MM, déjalo en blanco para ahora)")
-            fecha_hora = None
-            if fecha_str:
-                try:
-                    fecha_hora = datetime.strptime(fecha_str, "%Y-%m-%d %H:%M")
-                except ValueError:
-                    asistente_voz.hablar("Formato de fecha incorrecto. Intenta de nuevo.")
-                    continue
+            fecha = self.obtener_input_con_reintento("¿Cuál es la fecha de la temática? (Formato:YYYY-MM-DD HH:MM)", es_fecha=True)
             prioridad = self.obtener_input_con_reintento("¿Cuál es la prioridad? (Alta, Media, Baja)").capitalize()
-            asistente_organizador.crear_recordatorio_general(mensaje, fecha_hora, prioridad)
+            asistente_organizador.crear_recordatorio_general(mensaje, fecha, prioridad)
             asistente_voz.hablar("Recordatorio general creado con éxito.")
             self.desbloquear_menu()
             break
@@ -137,17 +141,21 @@ class Menu:
         self.mostrar_opciones_iniciales()
         while True:
             asistente_voz.hablar("Dime una opción:")
-            opcion = asistente_voz.escuchar_con_intentos().strip().lower()
+            opcion = asistente_voz.escuchar_con_intentos()
+            if not opcion:
+                asistente_voz.hablar("No te escuché bien. Intenta de nuevo.")
+                continue
 
             if not self.menu_desbloqueado:
                 if opcion in ["crear clase", "uno", "1"]:
                     self.crear_clase()
-                elif opcion in ["agregar recordatorio general", "dos", "2"]:
+                elif opcion in ["recordatorio general", "dos", "2", "agregar"]:
                     self.agregar_recordatorio_general()
                 elif opcion in ["salir", "tres", "3"]:
                     asistente_organizador.guardar_datos()
                     asistente_voz.hablar(f"Hasta pronto {self.usuario}")
                     break
+
                 elif opcion == "menu":
                     asistente_voz.hablar("Aún no se ha desbloqueado el menú completo. Crea una clase primero.")
                 else:

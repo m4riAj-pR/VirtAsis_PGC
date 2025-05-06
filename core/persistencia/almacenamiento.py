@@ -1,5 +1,5 @@
 from datetime import datetime
-from asistente_virtual import AsistenteVirtual
+from core.asistente_virtual import AsistenteVirtual
 from core.funciones.clases_docente import ClasesDocente
 from core.funciones.recordatorios import Recordatorio
 from core.funciones.lecciones import Leccion
