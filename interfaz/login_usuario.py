@@ -30,6 +30,9 @@ class Usuario:
     def desde_dict(cls, data):
         return cls(data["nombre_completo"], data["correo"])
 
+    def __str__(self):
+        return self.obtener_primer_nombre()
+
 class SistemaAutenticacion:
     def __init__(self):
         self.usuarios = self.cargar_usuarios()
@@ -69,7 +72,7 @@ class SistemaAutenticacion:
         else:
             nuevo_usuario = Usuario(nombre_completo, correo)
             self.usuarios[clave_usuario] = nuevo_usuario
-            self.guardar_usuarios()  # Guardar nuevo usuario
+            self.guardar_usuarios() 
             return nuevo_usuario, f"¡Registro exitoso! Bienvenido/a, {nuevo_usuario.obtener_primer_nombre()}."
 
 class LoginVentana:
