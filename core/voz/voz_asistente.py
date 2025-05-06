@@ -47,7 +47,6 @@ class AsistenteDeVoz:
         self.engine.say(texto)
         self.engine.runAndWait()
 
-# Ejemplo de uso:
 if __name__ == "__main__":
     asistente = AsistenteDeVoz("Jarvis")
     asistente.hablar("Hola, ¿en qué puedo ayudarte?")

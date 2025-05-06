@@ -7,12 +7,16 @@ COLOR_BOTON = "#3F5C92"
 COLOR_BOTON_HOVER = "#2f4a78"
 COLOR_BOTON_TEXTO = "#FFFFFF"
 COLOR_SOMBRA = "#C3CFD9"
-
+import tkinter as tk
 
 class InterfazMenu(Menu):
-    def __init__(self, usuario):
-        super().__init__(usuario)
-        self.ventana = tk.Tk()
+    def __init__(self, usuario, master=None):
+        self.usuario = usuario
+        if master is None:
+            self.ventana = tk.Tk()
+        else:
+            self.ventana = master
+        self.ventana.title(f"Menú Principal - TechAsistant ({self.usuario.obtener_primer_nombre()})")
         self.ventana.title("Asistente ZETA")
         self.ventana.geometry("500x500")
         self.ventana.configure(bg=COLOR_FONDO)

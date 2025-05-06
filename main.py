@@ -12,17 +12,15 @@ def main():
     root = tk.Tk()
     root.withdraw()
 
-
     login_ventana = tk.Toplevel(root)
     app_login = LoginVentana(login_ventana, sistema)
 
-    
     login_ventana.wait_window()
 
+    usuario_logueado = app_login.obtener_usuario_logueado()
 
-    if app_login.entry_nombre.get().strip() and app_login.entry_apellido.get().strip():
-        usuario = f"{app_login.entry_nombre.get().strip()} {app_login.entry_apellido.get().strip()}".title()
-        lanzar_interfaz(usuario)
+    if usuario_logueado:
+        lanzar_interfaz(usuario_logueado)
 
 if __name__ == "__main__":
     main()

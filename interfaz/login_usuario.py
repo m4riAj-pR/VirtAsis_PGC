@@ -3,7 +3,6 @@ from tkinter import messagebox
 import re
 import json
 
-
 COLOR_FONDO = "#F5F8FA"
 COLOR_TITULO = "#1E3A76"
 COLOR_ENTRADA = "#A8D6E6"
@@ -77,13 +76,17 @@ class LoginVentana:
     def __init__(self, master, sistema_autenticacion):
         self.master = master
         self.sistema = sistema_autenticacion
+        self.usuario_logueado = None
+        self.entry_nombre_clicked = False
+        self.entry_apellido_clicked = False
+        self.entry_correo_clicked = False
 
         master.title("Login - Asistente Organizador TechAsistant")
         master.geometry("400x400")
         master.configure(bg=COLOR_FONDO)
 
         self.titulo = tk.Label(master, text="Bienvenido a TechAsistant", font=("Poppins", 16, "bold"),
-                                 bg=COLOR_FONDO, fg=COLOR_TITULO)
+                                    bg=COLOR_FONDO, fg=COLOR_TITULO)
         self.titulo.pack(pady=20)
 
         self.label_nombre = tk.Label(master, text="Nombres", bg=COLOR_FONDO, fg=COLOR_TITULO)
@@ -91,30 +94,24 @@ class LoginVentana:
         self.entry_nombre = tk.Entry(master, bg=COLOR_ENTRADA, width=30)
         self.entry_nombre.insert(0, "Ingrese su nombre")
         self.entry_nombre.pack(pady=5)
-        self.entry_nombre_clicked = False
         self.entry_nombre.bind("<FocusIn>", self.borrar_nombre)
-
 
         self.label_apellido = tk.Label(master, text="Apellidos", bg=COLOR_FONDO, fg=COLOR_TITULO)
         self.label_apellido.pack()
         self.entry_apellido = tk.Entry(master, bg=COLOR_ENTRADA, width=30)
         self.entry_apellido.insert(0, "Ingrese su apellido")
         self.entry_apellido.pack(pady=5)
-        self.entry_apellido_clicked = False
         self.entry_apellido.bind("<FocusIn>", self.borrar_apellido)
-
 
         self.label_correo = tk.Label(master, text="Correo electrónico", bg=COLOR_FONDO, fg=COLOR_TITULO)
         self.label_correo.pack()
         self.entry_correo = tk.Entry(master, bg=COLOR_ENTRADA, width=30)
         self.entry_correo.insert(0, "ejemplo@correo.com")
         self.entry_correo.pack(pady=5)
-        self.entry_correo_clicked = False
         self.entry_correo.bind("<FocusIn>", self.borrar_correo)
 
-
         self.boton_login = tk.Button(master, text="Entrar", bg=COLOR_BOTON, fg=COLOR_BOTON_TEXTO,
-                                     width=20, command=self.procesar_login)
+                                        width=20, command=self.procesar_login)
         self.boton_login.pack(pady=20)
 
     def borrar_nombre(self, event):
@@ -142,12 +139,14 @@ class LoginVentana:
             return
 
         nombre_completo = f"{nombre} {apellido}".title()
-        usuario_menu = nombre_completo
-
         usuario, mensaje = self.sistema.registrar_o_login(nombre_completo, correo)
 
         if usuario:
             messagebox.showinfo("Bienvenido", mensaje)
-            self.master.destroy()  
+            self.usuario_logueado = usuario
+            self.master.destroy()
         else:
             messagebox.showerror("Error", mensaje)
+
+    def obtener_usuario_logueado(self):
+        return self.usuario_logueado
