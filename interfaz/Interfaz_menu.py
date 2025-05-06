@@ -1,5 +1,5 @@
-from funciones_menu import Menu
-from tkinter import tk
+from interfaz.funciones_menu import Menu
+from tkinter import Tk as tk
 
 COLOR_FONDO = "#F5F8FA"
 COLOR_TITULO = "#1E3A76"

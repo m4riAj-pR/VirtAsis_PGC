@@ -1,4 +1,3 @@
-from funciones_menu import Menu
 import tkinter as tk
 from tkinter import messagebox
 import re
