@@ -9,18 +9,17 @@ def lanzar_interfaz(usuario):
 def main():
     sistema = SistemaAutenticacion()
 
-    # Crear ventana raíz oculta
     root = tk.Tk()
     root.withdraw()
 
-    # Ventana de login
+
     login_ventana = tk.Toplevel(root)
     app_login = LoginVentana(login_ventana, sistema)
 
-    # Esperar a que el login termine (bloquea hasta cerrar)
+    
     login_ventana.wait_window()
 
-    # Si el login fue exitoso, se abre la interfaz
+
     if app_login.entry_nombre.get().strip() and app_login.entry_apellido.get().strip():
         usuario = f"{app_login.entry_nombre.get().strip()} {app_login.entry_apellido.get().strip()}".title()
         lanzar_interfaz(usuario)
