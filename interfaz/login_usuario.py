@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import messagebox
+import os
 import re
 import json
 
@@ -8,7 +9,11 @@ COLOR_TITULO = "#1E3A76"
 COLOR_ENTRADA = "#A8D6E6"
 COLOR_BOTON = "#3F5C92"
 COLOR_BOTON_TEXTO = "#FFFFFF"
+
 ARCHIVO_USUARIOS = "usuarios.json"
+CARPETA_DATOS = "data"
+ARCHIVO_USUARIOS = os.path.join(CARPETA_DATOS, ARCHIVO_USUARIOS)
+
 
 class Usuario:
     def __init__(self, nombre_completo, correo):
